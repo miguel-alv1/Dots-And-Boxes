@@ -14,6 +14,8 @@ import DBGame
 
 # You will want to use this import in your code
 import math
+import time
+import concurrent.futures
 
 # Whether to display the UCB rankings at each turn.
 DISPLAY_BOARDS = False 
@@ -218,18 +220,40 @@ def run_multiple_games(num_games, args):
     probably do not want to include the --displayBoard option in args, as
     this will do lots of printing and make running relatively slow.
     """
+
+    start  = time.perf_counter()
+
     player1GamesWon = 0
     draws = 0
-    for i in range(num_games):
-        print("Game " + str(i))
-        node = play_game(args)
-        winner = node.state.value()
-        if winner == 1:
-            player1GamesWon += 1
-        elif winner == 0:
-            draws += 1
-    print("Player 1 games won: " + str(player1GamesWon) + "/" + str(num_games))
-    print("Draws: " + str(draws) + "/" + str(num_games))
+
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        results = [executor.submit(play_game, args) for _ in range(num_games)]
+
+        for f in concurrent.futures.as_completed(results):
+            winner = f.result().state.value()
+
+            if winner == 1:
+                player1GamesWon += 1
+            elif winner == 0:
+                draws += 1
+        # print("Player 1 games won: " + str(player1GamesWon) + "/" + str(num_games))
+        # print("Draws: " + str(draws) + "/" + str(num_games))
+        finish = time.perf_counter()
+        print(round(finish-start, 3))
+            
+
+    # for i in range(num_games):
+    #     print("Game " + str(i))
+    #     node = play_game(args)
+    #     winner = node.state.value()
+    #     if winner == 1:
+    #         player1GamesWon += 1
+    #     elif winner == 0:
+    #         draws += 1
+    # print("Player 1 games won: " + str(player1GamesWon) + "/" + str(num_games))
+    # print("Draws: " + str(draws) + "/" + str(num_games))
+    # finish = time.perf_counter()
+    # print(round(finish-start, 3))
 
 def play_game(args):
     """
@@ -254,21 +278,26 @@ def play_game(args):
                 (args.second and node.state.turn == -1):
             move = MCTS(node, args.rollouts)
             if DISPLAY_BOARDS:
-                print(DBGame.show_values(node))
+                DBGame.print_board(node.state)
         else:
             if args.rolloutsSecondMCTSAgent == 0:
                 move = random_move(node)
             else:
                 move = MCTS(node2, args.rolloutsSecondMCTSAgent)
                 if DISPLAY_BOARDS:
-                    print(DBGame.show_values(node2))
+                    DBGame.print_board(node2.state)
+
         node.addMove(move)
         node = node.children[move]
         if args.rolloutsSecondMCTSAgent != 0:
             node2.addMove(move)
             node2 = node2.children[move]
-    print(node.state.player1_score)
-    print(node.state.player2_score)
+
+    if DISPLAY_BOARDS:
+        DBGame.print_board(node.state)
+    
+    # print(node.state.player1_score)
+    # print(node.state.player2_score)
     return node 
 
             
@@ -292,7 +321,7 @@ def main():
         winner = node.state.value()
         print(node.state.player1_score)
         print(node.state.player2_score)
-        # print(DBGame.print_board(node.state))
+        DBGame.print_board(node.state)
         if winner == 1:
             print("Player 1 wins")
         elif winner == -1:
