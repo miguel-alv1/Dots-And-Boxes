@@ -12,6 +12,7 @@ If python2.7 or an older version is installed in local machine:
 Type `python3 main.py` in terminal while in directory that holds all the project files in this repo.
 
 # MCTS Runtime with/without Parallelization
+We decided to speed up MCTS by parallelizing the games with the concurrent.futures Python module which allows for asynchronous execution performed with seperate processes using ProcessPoolExecutor. We decided to parallelize the games when multiple games are being played via the --numGames argument since each game does not give any valuable information to the next game that might be lost due to running multiple processes at the same time.
 
 **Runtime without Parallelization:**
 
