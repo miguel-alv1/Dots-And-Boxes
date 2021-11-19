@@ -17,7 +17,11 @@ Runtime Without Parallelization:
 
 | Number of Games | 5 Rollouts | 50 Rollouts | 250 Rollouts | 1000 Rollouts|
 |-----------------|------------|-------------|--------------|--------------|
-
+| 5               | 0.116 secs | 1.144 secs  | 6.264 secs   | 27.249 secs  |
+| 10              | 0.228 secs | 2.334 secs  | 12.679 secs  | 56.912 secs  |
+| 15              | 0.341 secs | 3.480 secs  | 19.276 secs  | 84.284 secs  |
+| 20              | 0.452 secs | 4.634 secs  | 25.798 secs  | 114.098 secs |
+| 25              | 0.549 secs | 5.829 secs  | 32.261 secs  | 141.591 secs |
 
 # MCTS Win Rate with/without Neural Network
 #TODO
