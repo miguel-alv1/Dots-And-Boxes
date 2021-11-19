@@ -5,11 +5,7 @@ Final project for CS321 (Making Decisions with AI) made by Nick Pandelakis and M
 In this implementation of dots and boxes we'll be using Monte Carlo Tree Search (MCTS), parallelization, as well as a neural network to improve both the runtime and win-rate of the AI player. In order to measure the success of both parallelization and a neural network, we've included relevant data regarding the impovement of runtime and win-rate of the MCTS AI player after the implementation of parallelization and a neural network.
 
 # How to Run the Project
-If python3 is installed in local machine:
-Type `python main.py` in a terminal while in directory that holds all the project files in this repo.
-
-If python2.7 or an older version is installed in local machine:
-Type `python3 main.py` in terminal while in directory that holds all the project files in this repo.
+Type `python3 MCTS-DB.py --rollouts [desired number of rollouts] --numGames[don't include if only simulating one game]` in terminal while in directory that holds all the project files in this repo. Optional flags include: `--second [if included, MCTS will go second] --displayBoard [will display game board as simulation plays out - cannot do this when parallelizing] --rolloutsSecondMCTSAgent [if included, will second player will also be an MCTS agent, must include number of rollouts desired] --ucbConst [must precede the desired value to set the UCB Constant value to] --parallel [if included, will run the games asynchronously]`.
 
 # MCTS Runtime with/without Parallelization
 We decided to speed up MCTS by parallelizing the games with the concurrent.futures Python module which allows for asynchronous execution performed with seperate processes using ProcessPoolExecutor. We decided to parallelize the games when multiple games are being played via the --numGames argument since each game does not give any valuable information to the next game that might be lost due to running multiple processes at the same time. We decided to play the dots and boxes games with two MCTS against each other. Also, we kept the number of rollouts the same for each agent and timed the time it took to print each game number (example: Game 1) print out the time from start of execution to finish. We first did this process without parallelization, recorded our results, and then repeated this with parallelization.
