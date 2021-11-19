@@ -13,7 +13,7 @@ Type `python3 main.py` in terminal while in directory that holds all the project
 
 # MCTS Runtime with/without Parallelization
 
-Runtime without Parallelization:
+**Runtime without Parallelization:**
 
 | Number of Games | 5 Rollouts | 50 Rollouts | 250 Rollouts | 1000 Rollouts|
 |-----------------|------------|-------------|--------------|--------------|
@@ -23,7 +23,7 @@ Runtime without Parallelization:
 | 20              | 0.452 secs | 4.634 secs  | 25.798 secs  | 114.098 secs |
 | 25              | 0.549 secs | 5.829 secs  | 32.261 secs  | 141.591 secs |
 
-Runtime with Parallelization:
+**Runtime with Parallelization:**
 
 | Number of Games | 5 Rollouts | 50 Rollouts | 250 Rollouts | 1000 Rollouts|
 |-----------------|------------|-------------|--------------|--------------|
