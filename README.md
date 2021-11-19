@@ -3,7 +3,7 @@
 Final project for CS321 (Making Decisions with AI) made by Nick Pandelakis and Miguel Alvarez. Dots and boxes is a perfect information game that involves two agents drawing lines between two dots on a grid (6 x 6 in our implementation). When a player completes a box by drawing the last line around a 1 x 1 grid square, the player is awarded that square and draws another line. The game is finished when all possible lines have been drawn and the player with the most boxes at the end is the winner.
 
 **Part 1**
-In this implementation of dots and boxes we'll be using Monte Carlo Tree Search (MCTS) with parallelization in order to speed up the runtime of the simulations. In order to measure the success of this part, we've included runtime for the game below that includes runtime (in seconds), number of games, and number of rollouts. Both of the players in these simulations are MCTS agents.
+In this implementation of dots and boxes we'll be using Monte Carlo Tree Search (MCTS) with parallelization in order to speed up the runtime of the simulations. In our game, red (R as marked in displayed boards) is player 1 and blue is player 2 (B as marked in displayed boards). In order to measure the success of this part, we've included runtime for the game below that includes runtime (in seconds), number of games, and number of rollouts. Both of the players in these simulations are MCTS agents.
 
 **Part 2**
 We will also be incorporating a neural network in order to increase the win-rate of the AI player. In order to measure the success of this part, we've included win-rate data for win-rate (out of 25 games) when we have an MCTS agent with the neural network playing against an MCTS agent without the neural network.
@@ -34,7 +34,7 @@ We decided to speed up MCTS by parallelizing the games with the concurrent.futur
 | 20              | 0.418 secs | 1.600 secs  | 8.290 secs   | 22.568  secs |
 | 25              | 0.452 secs | 2.119 secs  | 10.406 secs  | 45.544  secs |
 
-After running 
+After running MCTS both with and without parallelization, we can see a clear decrease in runtime after about 5 rollouts when playing 20+ games. For every rollout after this spot, we saw about a 3-4x faster runtime. 
 
 # MCTS Win Rate with/without Neural Network (Part 2)
 To be implemented...
