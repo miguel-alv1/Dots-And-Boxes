@@ -12,7 +12,12 @@ If python2.7 or an older version is installed in local machine:
 Type `python3 main.py` in terminal while in directory that holds all the project files in this repo.
 
 # MCTS Runtime with/without Parallelization
-#TODO
+
+Runtime Without Parallelization:
+
+| Number of Games | 5 Rollouts | 50 Rollouts | 250 Rollouts | 1000 Rollouts|
+|-----------------|------------|-------------|--------------|--------------|
+
 
 # MCTS Win Rate with/without Neural Network
 #TODO
