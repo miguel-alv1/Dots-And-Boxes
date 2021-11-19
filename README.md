@@ -9,6 +9,8 @@ In this implementation of dots and boxes we'll be using Monte Carlo Tree Search 
 We will also be incorporating a neural network in order to increase the win-rate of the AI player. In order to measure the success of this part, we've included win-rate data for win-rate (out of 25 games) when we have an MCTS agent with the neural network playing against an MCTS agent without the neural network.
 
 # How to Run the Project
+First, unzip the folder in order to uncompress the files needed to run the game.
+
 Type `python3 MCTS-DB.py --rollouts [desired number of rollouts] --numGames [don't include if only simulating one game]` in terminal while in directory that holds all the project files in this repo. Optional flags include: `--second [if included, MCTS will go second] --displayBoard [will display game board as simulation plays out - cannot do this when parallelizing] --rolloutsSecondMCTSAgent [if included, will second player will also be an MCTS agent, must include number of rollouts desired] --ucbConst [must precede the desired value to set the UCB Constant value to] --parallel [if included, will run the games asynchronously]`.
 
 # MCTS Runtime with/without Parallelization (Part 1)
