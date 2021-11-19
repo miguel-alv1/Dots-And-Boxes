@@ -12,7 +12,7 @@ If python2.7 or an older version is installed in local machine:
 Type `python3 main.py` in terminal while in directory that holds all the project files in this repo.
 
 # MCTS Runtime with/without Parallelization
-We decided to speed up MCTS by parallelizing the games with the concurrent.futures Python module which allows for asynchronous execution performed with seperate processes using ProcessPoolExecutor. We decided to parallelize the games when multiple games are being played via the --numGames argument since each game does not give any valuable information to the next game that might be lost due to running multiple processes at the same time.
+We decided to speed up MCTS by parallelizing the games with the concurrent.futures Python module which allows for asynchronous execution performed with seperate processes using ProcessPoolExecutor. We decided to parallelize the games when multiple games are being played via the --numGames argument since each game does not give any valuable information to the next game that might be lost due to running multiple processes at the same time. We decided to play the dots and boxes games with two MCTS against each other. Also, we kept the number of rollouts the same for each agent and timed the time it took to print each game number (example: Game 1) print out the time from start of execution to finish. We first did this process without parallelization, recorded our results, and then repeated this with parallelization.
 
 **Runtime without Parallelization:**
 
@@ -33,6 +33,8 @@ We decided to speed up MCTS by parallelizing the games with the concurrent.futur
 | 15              | 0.393 secs | 1.279 secs  | 6.103 secs   | 25.830 secs  |
 | 20              | 0.418 secs | 1.600 secs  | 8.290 secs   | 22.568  secs |
 | 25              | 0.452 secs | 2.119 secs  | 10.406 secs  | 45.544  secs |
+
+After running 
 
 # MCTS Win Rate with/without Neural Network
 #TODO
