@@ -2,15 +2,14 @@ import numpy as np
 import copy
 
 # Number of Dots, not lines!
-HEIGHT = 5
-WIDTH = 5
+HEIGHT = 6
+WIDTH = 6
 
 class State:
     def __init__(self, state=None, move=None):
         self.prev_move_filled_box = False
 
         if state==None:
-
             self._boxes = [0]*((WIDTH - 1) * (HEIGHT - 1))
             self._box_owner = [' ']*((WIDTH - 1) * (HEIGHT - 1))
             self._lines = {}
@@ -22,11 +21,13 @@ class State:
             for i in range(HEIGHT):
                 for j in range(WIDTH - 1):
                     k = ((i, j), (i, j + 1))
+                    # Connect to box below
                     if i < HEIGHT - 1:
                         if k in self._lines:
                             self._lines[k].append((i * (WIDTH - 1)) + j)
                         else:
                             self._lines[k] = [(i * (WIDTH - 1)) + j]
+                    # Connect to box above
                     if i > 0:
                         k = ((i, j), (i, j + 1))
                         if k in self._lines:
@@ -38,11 +39,13 @@ class State:
             for j in range(WIDTH):
                 for i in range(HEIGHT - 1):
                     k = ((i, j), (i + 1, j))
+                    # Connect to box right adjacent box
                     if j < WIDTH - 1:
                         if k in self._lines:
                             self._lines[k].append(((i * (WIDTH - 1)) + j))
                         else:
                             self._lines[k] = [(i * (WIDTH - 1)) + j]
+                    # Connect to box left adjacent box
                     if j > 0:
                         if k in self._lines:
                             self._lines[k].append(((i * (WIDTH - 1)) + j) - 1)
@@ -66,7 +69,7 @@ class State:
                             self.fillBox(box, state)
                             self.prev_move_filled_box = True
 
-                    #remove move pool of available moves from this state
+                    #remove move from available moves in this state
                     del self._lines[move]
                 except KeyError as e:
                     print("Invalid Move")
@@ -87,8 +90,6 @@ class State:
         else:
             self.player2_score += 1
             self._box_owner[box] = 'B'
-
-        # TODO: Keep track of which players own which boxes
 
     def isTerminal(self):
         if self._lines:
@@ -111,17 +112,6 @@ class State:
 def new_game() -> State:
     return State()
 
-# '''.-----.-----.
-#    |  R  |     |     
-#    .-----.-----.
-
-
-# .     .
-# 
-# .     .
-#
-#
-#
 
 def print_board(state):
     sb1 = '.'
@@ -142,7 +132,8 @@ def print_board(state):
                 sb2 += '      '
             else:
                 if j < WIDTH - 1:
-                    #Get box index number from magic formula used above
+                    # Get box index number from formula used above for vertical lines
+                    # Note Player 1 is 'R' and Player 2 is 'B'
                     sb2 += '|  {}  '.format(state._box_owner[(i * (WIDTH - 1)) + j])
                 else:
                     sb2 += '|    '
@@ -160,13 +151,3 @@ def print_board(state):
 
     print(sb1)
     print(sb2)
-        
-            
-
-            
-
-#
-#
-if __name__=='__main__':
-    db = State()
-    print(db._lines)

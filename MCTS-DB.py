@@ -5,6 +5,7 @@ you can take a look at DBGame.py to get a sense of how the game is structured.
 @author Bryce Wiedenbeck
 @author Anna Rafferty (adapted from original)
 @author Dave Musicant (adapted for Python 3 and other changes)
+@author Miguel Alvarez and Nick Pandelakis (Adapted for Dots and Boxes with parallelization)
 """
 
 # These imports are used by the starter code.
@@ -36,7 +37,6 @@ class Node(object):
         self.children = {} # maps moves (keys) to Nodes (values); if you use it differently, you must also change addMove
         self.visits = 0
         self.value = 0
-        # Note: you may add additional fields if needed
         
     def addMove(self, move):
         """
@@ -60,15 +60,6 @@ class Node(object):
     def updateValue(self, outcome):
         
         player_wins = self.value * self.visits
-
-        # if outcome == 0:
-        #     player_wins += 0.5
-        # elif self.state.turn == -1:
-        #     if outcome == 1:
-        #         player_wins += 1
-        # else:
-        #     if outcome == -1:
-        #         player_wins += 1
 
         if self.parent is not None:
             # Root node does not need to be updated
@@ -107,8 +98,6 @@ def MCTS(root: Node, rollouts: int) -> int:
     Return:
         The legal move from node.state with the highest value estimate
     """
-    "*** YOUR CODE HERE ***"
-    # NOTE: you will need several helper functions
     
     for i in range(rollouts):    
         leaf = select(root)
@@ -185,7 +174,9 @@ def parse_args():
                     "will also be an MCTS agent and will use the number of rollouts set with this "+\
                     "argument. Default=0 (other player is random)")   
     p.add_argument("--ucbConst", type=float, default=.5, help="Value for the UCB exploration "+\
-                    "constant. Default=.5") 
+                    "constant. Default=.5")
+    p.add_argument("--parallel", action="store_true", help="Set this flag to "+\
+                    "run MCTS games in parallel.")
     args = p.parse_args()
     if args.displayBoard:
         global DISPLAY_BOARDS
@@ -226,34 +217,35 @@ def run_multiple_games(num_games, args):
     player1GamesWon = 0
     draws = 0
 
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        results = [executor.submit(play_game, args) for _ in range(num_games)]
+    if args.parallel:
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            results = [executor.submit(play_game, args) for _ in range(num_games)]
 
-        for f in concurrent.futures.as_completed(results):
-            winner = f.result().state.value()
+            for f in concurrent.futures.as_completed(results):
+                winner = f.result().state.value()
 
+                if winner == 1:
+                    player1GamesWon += 1
+                elif winner == 0:
+                    draws += 1
+
+            print("Player 1 games won: " + str(player1GamesWon) + "/" + str(num_games))
+            print("Draws: " + str(draws) + "/" + str(num_games))
+            finish = time.perf_counter()
+            print(round(finish-start, 3))
+    else:
+        for i in range(num_games):
+            print("Game " + str(i))
+            node = play_game(args)
+            winner = node.state.value()
             if winner == 1:
                 player1GamesWon += 1
             elif winner == 0:
                 draws += 1
-        # print("Player 1 games won: " + str(player1GamesWon) + "/" + str(num_games))
-        # print("Draws: " + str(draws) + "/" + str(num_games))
+        print("Player 1 games won: " + str(player1GamesWon) + "/" + str(num_games))
+        print("Draws: " + str(draws) + "/" + str(num_games))
         finish = time.perf_counter()
         print(round(finish-start, 3))
-            
-
-    # for i in range(num_games):
-    #     print("Game " + str(i))
-    #     node = play_game(args)
-    #     winner = node.state.value()
-    #     if winner == 1:
-    #         player1GamesWon += 1
-    #     elif winner == 0:
-    #         draws += 1
-    # print("Player 1 games won: " + str(player1GamesWon) + "/" + str(num_games))
-    # print("Draws: " + str(draws) + "/" + str(num_games))
-    # finish = time.perf_counter()
-    # print(round(finish-start, 3))
 
 def play_game(args):
     """
@@ -296,8 +288,6 @@ def play_game(args):
     if DISPLAY_BOARDS:
         DBGame.print_board(node.state)
     
-    # print(node.state.player1_score)
-    # print(node.state.player2_score)
     return node 
 
             
@@ -305,7 +295,7 @@ def play_game(args):
 
 def main():
     """
-    Play a game of connect 4, using MCTS to choose the moves for one of the players.
+    Play a game of Dots and Boxes using MCTS to choose the moves for one of the players.
     args on command line set properties; see parse_args() for details.
     """
     # Get commandline arguments
@@ -319,9 +309,9 @@ def main():
     
         # Print result
         winner = node.state.value()
-        print(node.state.player1_score)
-        print(node.state.player2_score)
         DBGame.print_board(node.state)
+        print("Player 1 Boxes: ", node.state.player1_score)
+        print("Player 2 Boxes: ", node.state.player2_score)
         if winner == 1:
             print("Player 1 wins")
         elif winner == -1:
