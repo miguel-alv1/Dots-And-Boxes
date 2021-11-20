@@ -1,9 +1,19 @@
+from os import WIFCONTINUED
 import numpy as np
 import copy
 
 # Number of Dots, not lines!
-HEIGHT = 6
-WIDTH = 6
+HEIGHT = 5
+WIDTH = 5
+
+moves = [((0, 0), (0, 1)), ((0, 1), (0, 2)), ((0, 2), (0, 3)), ((0, 3), (0, 4)), ((1, 0), (1, 1)),
+         ((1, 1), (1, 2)), ((1, 2), (1, 3)), ((1, 3), (1, 4)), ((2, 0), (2, 1)), ((2, 1), (2, 2)), 
+         ((2, 2), (2, 3)), ((2, 3), (2, 4)), ((3, 0), (3, 1)), ((3, 1), (3, 2)), ((3, 2), (3, 3)), 
+         ((3, 3), (3, 4)), ((4, 0), (4, 1)), ((4, 1), (4, 2)), ((4, 2), (4, 3)), ((4, 3), (4, 4)), 
+         ((0, 0), (1, 0)), ((1, 0), (2, 0)), ((2, 0), (3, 0)), ((3, 0), (4, 0)), ((0, 1), (1, 1)), 
+         ((1, 1), (2, 1)), ((2, 1), (3, 1)), ((3, 1), (4, 1)), ((0, 2), (1, 2)), ((1, 2), (2, 2)), 
+         ((2, 2), (3, 2)), ((3, 2), (4, 2)), ((0, 3), (1, 3)), ((1, 3), (2, 3)), ((2, 3), (3, 3)), 
+         ((3, 3), (4, 3)), ((0, 4), (1, 4)), ((1, 4), (2, 4)), ((2, 4), (3, 4)), ((3, 4), (4, 4))]
 
 class State:
     def __init__(self, state=None, move=None):
@@ -108,6 +118,26 @@ class State:
         else:
             return 0
 
+    def toVector(self):
+        vector = [0.25]*(((WIDTH - 1)*WIDTH) + (((HEIGHT - 1)*HEIGHT)) + (HEIGHT - 1)*(WIDTH - 1))
+        for i in range(len(moves)):
+            e = moves[i]
+            if e in self._lines:
+                vector[i] = 0
+
+        for j in range((HEIGHT - 1)*(WIDTH - 1)):
+            if self._box_owner[j] == 'R':
+                vector[i + j + 1] = 0.5
+            elif self._box_owner[j] == 'B':
+                vector[i + j + 1] = 0.75
+            else:
+                vector[i + j + 1] = 1
+
+        return vector
+            
+
+
+
 
 def new_game() -> State:
     return State()
@@ -151,3 +181,7 @@ def print_board(state):
 
     print(sb1)
     print(sb2)
+
+if __name__ == '__main__':
+    state = State()
+    print(list(state._lines.keys()))

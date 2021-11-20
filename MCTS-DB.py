@@ -17,6 +17,7 @@ import DBGame
 import math
 import time
 import concurrent.futures
+import csv
 
 # Whether to display the UCB rankings at each turn.
 DISPLAY_BOARDS = False 
@@ -217,12 +218,19 @@ def run_multiple_games(num_games, args):
     player1GamesWon = 0
     draws = 0
 
+    writer = csv.writer(open('data.csv', 'w'))
+
     if args.parallel:
         with concurrent.futures.ProcessPoolExecutor() as executor:
             results = [executor.submit(play_game, args) for _ in range(num_games)]
 
             for f in concurrent.futures.as_completed(results):
-                winner = f.result().state.value()
+                result, state_list = f.result()
+                winner = result.state.value()
+                for row in state_list:
+                    writer.writerow(row + [winner])
+                
+
 
                 if winner == 1:
                     player1GamesWon += 1
@@ -236,8 +244,11 @@ def run_multiple_games(num_games, args):
     else:
         for i in range(num_games):
             print("Game " + str(i))
-            node = play_game(args)
-            winner = node.state.value()
+            result, state_list = play_game(args)
+            winner = result.state.value()
+            for row in state_list:
+                writer.writerow(row + [winner])
+
             if winner == 1:
                 player1GamesWon += 1
             elif winner == 0:
@@ -255,6 +266,9 @@ def play_game(args):
     and how many rollouts to use.
     Returns the final terminal node for the game.
     """
+
+    state_list = []
+
     # Make start state and root of MCTS tree
     start_state = DBGame.new_game()
     root1 = Node(start_state, None)
@@ -281,6 +295,7 @@ def play_game(args):
 
         node.addMove(move)
         node = node.children[move]
+        state_list.append(node.state.toVector())
         if args.rolloutsSecondMCTSAgent != 0:
             node2.addMove(move)
             node2 = node2.children[move]
@@ -288,7 +303,7 @@ def play_game(args):
     if DISPLAY_BOARDS:
         DBGame.print_board(node.state)
     
-    return node 
+    return node, state_list
 
             
     
