@@ -11,6 +11,12 @@ We will also be incorporating a neural network in order to increase the win-rate
 # How to Run the Project
 First, unzip the folder in order to uncompress the files needed to run the game.
 
+Install these Python modules since mirage doesn't have them:
+
+pip3 install keras
+
+pip3 install tensorflow
+
 Type `python3 MCTS-DB.py --rollouts [desired number of rollouts] --numGames [don't include if only simulating one game]` in terminal while in directory that holds all the project files in this repo. Optional flags include: `--second [if included, MCTS will go second] --displayBoard [will display game board as simulation plays out - cannot do this when parallelizing] --rolloutsSecondMCTSAgent [if included, will second player will also be an MCTS agent, must include number of rollouts desired] --ucbConst [must precede the desired value to set the UCB Constant value to] --parallel [if included, will run the games asynchronously]`.
 
 # MCTS Runtime with/without Parallelization (Part 1)
@@ -40,10 +46,20 @@ After running MCTS both with and without parallelization, we can see a clear dec
 
 # MCTS Win Rate with/without Neural Network (Part 2)
 
-Important: Need to install keras/tensorflow modules before trying to run as mirage doesn't have these:
+Reference Paper: https://www.mdpi.com/2076-3417/11/5/2056/htm
 
-pip3 install keras
+We based our neural network approach off of the paper with the following modifications:
 
-pip3 install tensorflow
+Changed board size from 5 x 5 to 4 x 4 for quicker data gathering.
+Changed the input layer from 85 to 56 to match the new board size.
+Changed the hidden layer from 100 to 67 to match the proportions of the paper’s original network (This had no effect on model accuracy).
+Changed the output layer from 3 to 1, since we are only giving player 1 access to the neural network.
+
+The input layer of our neural network takes in a vector with 56 entries. These entries correspond to the 40 total lines that can be drawn on the board plus the 16 boxes. At the recommendation of the paper, we used the sigmoid activation function for both the middle and output layers. This function is particularly useful for the output layer since it produces a number between 0 and 1, giving us the probability for a player 1 win. Overall, our neural network was able to achieve 70% accuracy after 100 training epochs. We then used the created model during the simulation phase of MCTS. If the model predicted that player 1 would win with a probability greater than some threshold, we cut the simulation short there and moved on to back propagation immediately.
+
+Although the neural network itself showed great promise, it did not deliver desirable results when included in MCTS. Even with extremely few rollouts, player one takes an absurd amount of time to pick its move. We were not able to replicate the move speeds claimed in the paper. This could be due to the fact that the authors in the paper were using Java instead of Python. We collected our data by running 8950 games with 2000 rollouts for each MCTS player (that still took about 15 hours). This might have been an issue since in the paper they ran 115,000 games with 100,000 rollouts, giving them significantly better moves and likely yielding a neural network model much higher accuracy than ours.
+
+The accuracy of the network seems like it needs to be much higher than ours to achieve what the authors claim. This makes sense because if we are choosing to cut our simulations short based on the prediction made by the network model, that prediction needs to be extremely accurate in order for us to be confident that that state is actually any good.
+
 
 
