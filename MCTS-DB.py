@@ -21,7 +21,7 @@ import keras
 import numpy
 
 # Load Model
-MODEL = keras.models.load_model("DB_model")
+MODEL = keras.models.load_model("DB_Model")
 
 # Set Win Threshold for model prediction.
 THRESHOLD = 0.8
