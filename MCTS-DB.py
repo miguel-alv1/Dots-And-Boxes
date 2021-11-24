@@ -337,7 +337,7 @@ def main():
         run_multiple_games(args.numGames, args)
     else:
         # Play the game
-        node = play_game(args)
+        node, _ = play_game(args)
     
         # Print result
         winner = node.state.value()
