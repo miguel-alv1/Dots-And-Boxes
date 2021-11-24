@@ -17,7 +17,14 @@ import DBGame
 import math
 import time
 import concurrent.futures
-import csv
+import keras
+import numpy
+
+# Load Model
+MODEL = keras.models.load_model("DB_model")
+
+# Set Win Threshold for model prediction.
+THRESHOLD = 0.8
 
 # Whether to display the UCB rankings at each turn.
 DISPLAY_BOARDS = False 
@@ -104,7 +111,7 @@ def MCTS(root: Node, rollouts: int) -> int:
         leaf = select(root)
         if not leaf.state.isTerminal():
             child = expand(leaf)
-            outcome = simulate(child)
+            outcome = simulate(child, root.state.turn)
         else:
             #Set child to be the state just before the terminal state is reached
             child = leaf.parent
@@ -141,13 +148,22 @@ def expand(leaf: Node) -> Node:
             return leaf.children[move]
 
 
-def simulate(child: Node) -> int:
+def simulate(child: Node, turn) -> int:
     state = child.state
 
-    while not state.isTerminal():
-        state = random_next_state(state)
+    if turn == 1:
+        while not state.isTerminal():
+            prob = MODEL.predict(numpy.array([state.toVector()]))[0][0]
+            if prob >= THRESHOLD:
+                return 1
+            else:
+                state = random_next_state(state)
+        return state.value()
+    else:
+        while not state.isTerminal():
+            state = random_next_state(state)
 
-    return state.value()
+        return state.value()
 
 # only bp back to the root we started at.
 def back_propogate(outcome, child: Node, root: Node) -> None:
@@ -218,7 +234,7 @@ def run_multiple_games(num_games, args):
     player1GamesWon = 0
     draws = 0
 
-    writer = csv.writer(open('data.csv', 'w'))
+    #writer = csv.writer(open('data.csv', 'w'))
 
     if args.parallel:
         with concurrent.futures.ProcessPoolExecutor() as executor:
@@ -227,9 +243,10 @@ def run_multiple_games(num_games, args):
             for f in concurrent.futures.as_completed(results):
                 result, state_list = f.result()
                 winner = result.state.value()
-                for row in state_list:
-                    writer.writerow(row + [winner])
+                # for row in state_list:
+                #     writer.writerow(row + [winner])
                 
+                print('done')
 
 
                 if winner == 1:
@@ -246,8 +263,8 @@ def run_multiple_games(num_games, args):
             print("Game " + str(i))
             result, state_list = play_game(args)
             winner = result.state.value()
-            for row in state_list:
-                writer.writerow(row + [winner])
+            # for row in state_list:
+            #     writer.writerow(row + [winner])
 
             if winner == 1:
                 player1GamesWon += 1
