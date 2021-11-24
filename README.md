@@ -41,7 +41,8 @@ After running MCTS both with and without parallelization, we can see a clear dec
 # MCTS Win Rate with/without Neural Network (Part 2)
 
 Important: Need to install keras/tensorflow modules before trying to run as mirage doesn't have these:
-pip3 instal keras
+pip3 install keras
+
 pip3 install tensorflow
 
 
