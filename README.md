@@ -39,4 +39,9 @@ We decided to speed up MCTS by parallelizing the games with the concurrent.futur
 After running MCTS both with and without parallelization, we can see a clear decrease in runtime after about 5 rollouts when playing 20+ games. For every combination of number of games and number of rollouts we tested after this spot we saw about a 3-4x decrease in runtime with parallelization.
 
 # MCTS Win Rate with/without Neural Network (Part 2)
-To be implemented...
+
+Important: Need to install keras/tensorflow modules before trying to run as mirage doesn't have these:
+pip3 instal keras
+pip3 install tensorflow
+
+
